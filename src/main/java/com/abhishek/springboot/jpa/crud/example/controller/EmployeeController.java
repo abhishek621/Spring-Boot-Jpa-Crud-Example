@@ -37,7 +37,7 @@ public class EmployeeController {
 	public ResponseEntity<Employee> getEmployeeById(@PathVariable(value = "id") Long employeeId)
 			throws ResourceNotFoundException {
 		Employee employee = employeeService.getEmployeeById(employeeId)
-				.orElseThrow(() -> new ResourceNotFoundException("Employee not found for this id :: " + employeeId));
+				.orElseThrow(() -> new ResourceNotFoundException("Employee does not exists with this : " + employeeId));
 		return ResponseEntity.ok().body(employee);
 	}
 
@@ -63,7 +63,7 @@ public class EmployeeController {
 		employeeService.deleteEmployee(employeeId);
 
 		Map<String, String> response = new HashMap<>();
-		response.put("message", "Given Employee with id : "+ employeeId + " is deleted");
+		response.put("message", "Employee with id : "+ employeeId + " has been deleted");
 		return response;
 	}
 
