@@ -27,6 +27,8 @@ public class EmployeeController {
 
 	@Autowired
 	private EmployeeService employeeService;
+	
+	//http://localhost:8080/swagger-ui/index.html/
 
 	@GetMapping("/emp")
 	public List<Employee> getAllEmployees() {

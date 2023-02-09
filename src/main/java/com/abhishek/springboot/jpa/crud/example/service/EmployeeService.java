@@ -37,6 +37,7 @@ public class EmployeeService {
 		employee.setEmail(employeeDetails.getEmail());
 		employee.setLastName(employeeDetails.getLastName());
 		employee.setFirstName(employeeDetails.getFirstName());
+		employee.setSalary(employeeDetails.getSalary());
 		Employee updatedEmployee = employeeRepository.save(employee);
 		return updatedEmployee;
 	}
