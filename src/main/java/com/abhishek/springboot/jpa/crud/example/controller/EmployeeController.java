@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.abhishek.springboot.jpa.crud.example.dto.InputRequest;
 import com.abhishek.springboot.jpa.crud.example.entity.Employee;
 import com.abhishek.springboot.jpa.crud.example.exceptions.ResourceNotFoundException;
 import com.abhishek.springboot.jpa.crud.example.repo.EmployeeDao;
@@ -59,16 +60,14 @@ public class EmployeeController {
 	}
 
 	@PostMapping("/emp")
-	public Employee saveEmployee(@Valid @RequestBody Employee employee) {
+	public String saveEmployee(@Valid @RequestBody InputRequest<Employee> employee) {
 		return employeeService.createEmployee(employee);
 	}
 
 	@PutMapping("/emp/{id}")
-	public ResponseEntity<Employee> updateEmployee(@PathVariable(value = "id") Long employeeId,
-			@Valid @RequestBody Employee employeeDetails) throws ResourceNotFoundException {
-
-		Employee updatedEmployee = employeeService.updateEmployee(employeeId, employeeDetails);
-
+	public ResponseEntity<String> updateEmployee(@PathVariable(value = "id") Long employeeId,
+			@Valid @RequestBody InputRequest<Employee> employee) throws ResourceNotFoundException {
+			String updatedEmployee = employeeService.updateEmployee(employeeId, employee);
 		return ResponseEntity.ok(updatedEmployee);
 
 	}

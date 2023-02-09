@@ -7,8 +7,10 @@ import java.util.Properties;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication
+@EnableJpaAuditing
 public class SpringBootJpaCrudExampleApplication {
 
 	public static void main(String[] args) throws FileNotFoundException, IOException {

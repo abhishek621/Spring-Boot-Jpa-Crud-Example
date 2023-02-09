@@ -1,5 +1,6 @@
 package com.abhishek.springboot.jpa.crud.example.service;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.abhishek.springboot.jpa.crud.example.dto.InputRequest;
 import com.abhishek.springboot.jpa.crud.example.entity.Employee;
 import com.abhishek.springboot.jpa.crud.example.exceptions.ResourceNotFoundException;
 import com.abhishek.springboot.jpa.crud.example.repo.EmployeeRepository;
@@ -26,20 +28,27 @@ public class EmployeeService {
 		return employeeRepository.findById(employeeId);
 	}
 
-	public Employee createEmployee(Employee employee) {
-		return employeeRepository.save(employee);
+	public String createEmployee(InputRequest<Employee> request) {
+		String currentUser = request.getLoggedInUser();
+		request.setTimeZone(Calendar.getInstance().getTimeZone().getDisplayName());
+
+		Employee employee = request.getEmployee();
+		employee.setCreatedBy(currentUser);
+		employeeRepository.save(employee);
+		return "Employee Saved Successfully";
 	}
 
-	public Employee updateEmployee(Long employeeId, Employee employeeDetails) throws ResourceNotFoundException {
+	public String updateEmployee(Long employeeId, InputRequest<Employee> request) throws ResourceNotFoundException {
 		Employee employee = employeeRepository.findById(employeeId)
 				.orElseThrow(() -> new ResourceNotFoundException("Employee not found for this id :: " + employeeId));
 
-		employee.setEmail(employeeDetails.getEmail());
-		employee.setLastName(employeeDetails.getLastName());
-		employee.setFirstName(employeeDetails.getFirstName());
-		employee.setSalary(employeeDetails.getSalary());
-		Employee updatedEmployee = employeeRepository.save(employee);
-		return updatedEmployee;
+		employee.setFirstName(request.getEmployee().getFirstName());
+		employee.setLastName(request.getEmployee().getLastName());
+		employee.setEmail(request.getEmployee().getEmail());
+		employee.setSalary(request.getEmployee().getSalary());
+		employee.setUpdatedBy(request.getLoggedInUser());
+		employeeRepository.saveAndFlush(employee);
+		return "Employee Data Updated Successfully";
 	}
 
 	public Map<String, String> deleteEmployee(Long employeeId) throws ResourceNotFoundException {
@@ -48,7 +57,7 @@ public class EmployeeService {
 
 		employeeRepository.delete(employee);
 		Map<String, String> response = new HashMap<>();
-		response.put("message", "Given Employee with id : "+ employeeId + " is deleted");
+		response.put("message", "Given Employee with id : " + employeeId + " is deleted");
 		return response;
 	}
 

@@ -1,7 +1,10 @@
 package com.abhishek.springboot.jpa.crud.example.entity;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -10,6 +13,12 @@ import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.ParameterMode;
 import javax.persistence.StoredProcedureParameter;
 import javax.persistence.Table;
+
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,13 +29,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@NamedStoredProcedureQueries({@NamedStoredProcedureQuery
-			(name="firstProcedure",procedureName ="getEmployees"),
-			@NamedStoredProcedureQuery(name="secondProcedure",
-					procedureName = "getEmployeesByName",
-						parameters = {@StoredProcedureParameter(mode = ParameterMode.IN, 
-											name = "fname", type = String.class)})
-			})
+@NamedStoredProcedureQueries({ @NamedStoredProcedureQuery(name = "firstProcedure", procedureName = "getEmployees"),
+		@NamedStoredProcedureQuery(name = "secondProcedure", procedureName = "getEmployeesByName", parameters = {
+				@StoredProcedureParameter(mode = ParameterMode.IN, name = "fname", type = String.class) }) })
+@EntityListeners(AuditingEntityListener.class)
 public class Employee {
 
 	@Id
@@ -40,5 +46,18 @@ public class Employee {
 	private String email;
 	@Column(name = "salary")
 	private Double salary;
+
+	@CreatedDate
+	@Column(name="created_on")
+	private Date createdOn;
+	@LastModifiedDate
+	@Column(name="updated_on")
+	private Date updatedOn;
+	@CreatedBy
+	@Column(name="created_by")
+	private String createdBy;
+	@LastModifiedBy
+	@Column(name="updated_by")
+	private String updatedBy;
 
 }
