@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.abhishek.springboot.jpa.crud.example.entity.Employee;
 import com.abhishek.springboot.jpa.crud.example.exceptions.ResourceNotFoundException;
+import com.abhishek.springboot.jpa.crud.example.repo.EmployeeDao;
 import com.abhishek.springboot.jpa.crud.example.service.EmployeeService;
 
 @RestController
@@ -28,7 +29,21 @@ public class EmployeeController {
 	@Autowired
 	private EmployeeService employeeService;
 	
-	//http://localhost:8080/swagger-ui/index.html/
+	@Autowired
+	private EmployeeDao employeeDao;
+	
+	//http://localhost:8080/swagger-ui/index.html
+	
+	@GetMapping("/firstProcedure")
+	public List<Employee> findAllEmployeeUsingStoreProcedure(){
+		return employeeDao.getAllEmployeeUsingStoreProcedure();
+	}
+	
+	@GetMapping("/secondProcedure/{input}")
+	public List<Employee> findEmployeeNameUsingStoreProcedure(@PathVariable(name="input")
+									String input){
+		return employeeDao.getEmployeeNameUsingStoreProcedure(input);
+	}
 
 	@GetMapping("/emp")
 	public List<Employee> getAllEmployees() {
