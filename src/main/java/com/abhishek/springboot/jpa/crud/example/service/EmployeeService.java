@@ -4,14 +4,15 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.abhishek.springboot.jpa.crud.example.dto.EmployeeDTO;
 import com.abhishek.springboot.jpa.crud.example.dto.InputRequest;
 import com.abhishek.springboot.jpa.crud.example.entity.Employee;
-import com.abhishek.springboot.jpa.crud.example.exceptions.ResourceNotFoundException;
+import com.abhishek.springboot.jpa.crud.example.exceptions.EmployeeNotFoundException;
 import com.abhishek.springboot.jpa.crud.example.repo.EmployeeRepository;
 
 @Service
@@ -24,8 +25,8 @@ public class EmployeeService {
 		return employeeRepository.findAll();
 	}
 
-	public Optional<Employee> getEmployeeById(long employeeId) {
-		return employeeRepository.findById(employeeId);
+	public Employee getEmployeeById(long employeeId) {
+		return employeeRepository.findById(employeeId).orElseThrow(() -> new EmployeeNotFoundException(employeeId));
 	}
 
 	public String createEmployee(InputRequest<Employee> request) {
@@ -38,27 +39,43 @@ public class EmployeeService {
 		return "Employee Saved Successfully";
 	}
 
-	public String updateEmployee(Long employeeId, InputRequest<Employee> request) throws ResourceNotFoundException {
-		Employee employee = employeeRepository.findById(employeeId)
-				.orElseThrow(() -> new ResourceNotFoundException("Employee not found for this id :: " + employeeId));
+	public String updateEmployee(Long id, InputRequest<Employee> request) {
+		Employee existingEmployee = employeeRepository.findById(id)
+				.orElseThrow(() -> new EmployeeNotFoundException(id));
 
-		employee.setFirstName(request.getEmployee().getFirstName());
-		employee.setLastName(request.getEmployee().getLastName());
-		employee.setEmail(request.getEmployee().getEmail());
-		employee.setSalary(request.getEmployee().getSalary());
-		employee.setUpdatedBy(request.getLoggedInUser());
-		employeeRepository.saveAndFlush(employee);
+		existingEmployee.setFirstName(request.getEmployee().getFirstName());
+		existingEmployee.setLastName(request.getEmployee().getLastName());
+		existingEmployee.setEmail(request.getEmployee().getEmail());
+		existingEmployee.setSalary(request.getEmployee().getSalary());
+		existingEmployee.setUpdatedBy(request.getLoggedInUser());
+		employeeRepository.saveAndFlush(existingEmployee);
 		return "Employee Data Updated Successfully";
 	}
 
-	public Map<String, String> deleteEmployee(Long employeeId) throws ResourceNotFoundException {
-		Employee employee = employeeRepository.findById(employeeId)
-				.orElseThrow(() -> new ResourceNotFoundException("Employee not found for this id :: " + employeeId));
+	
+	 public Map<String,String> deleteEmployee(Long employeeId) {
+		    employeeRepository.findById(employeeId)
+		        .orElseThrow(() -> new EmployeeNotFoundException(employeeId));
+		    employeeRepository.deleteById(employeeId);
+		    Map<String, String> response = new HashMap<>();
+		    response.put("message", "Given Employee with id : " + employeeId + " is deleted");
+		    return response;
+	 }
 
-		employeeRepository.delete(employee);
-		Map<String, String> response = new HashMap<>();
-		response.put("message", "Given Employee with id : " + employeeId + " is deleted");
-		return response;
+	public EmployeeDTO addEmployee(EmployeeDTO employeeDTO) {
+		Employee employee = mapDtoToEntity(employeeDTO);
+		employee = employeeRepository.save(employee);
+		return mapEntityToDto(employee);
+	}	
+
+	private Employee mapDtoToEntity(EmployeeDTO employeeDTO) {
+		ModelMapper modelMapper = new ModelMapper();
+		return modelMapper.map(employeeDTO, Employee.class);
+	}
+
+	private EmployeeDTO mapEntityToDto(Employee employee) {
+		ModelMapper modelMapper = new ModelMapper();
+		return modelMapper.map(employee, EmployeeDTO.class);
 	}
 
 }

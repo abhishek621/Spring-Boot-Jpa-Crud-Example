@@ -48,16 +48,25 @@ public class Employee {
 	private Double salary;
 
 	@CreatedDate
-	@Column(name="created_on")
+	@Column(name = "created_on")
 	private Date createdOn;
 	@LastModifiedDate
-	@Column(name="updated_on")
+	@Column(name = "updated_on")
 	private Date updatedOn;
 	@CreatedBy
-	@Column(name="created_by")
+	@Column(name = "created_by")
 	private String createdBy;
 	@LastModifiedBy
-	@Column(name="updated_by")
+	@Column(name = "updated_by")
 	private String updatedBy;
+
+	public Employee(long id, String firstName, String lastName, String email, Double salary) {
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.salary = salary;
+
+	}
 
 }
