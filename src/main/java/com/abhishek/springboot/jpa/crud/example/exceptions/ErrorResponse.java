@@ -1,27 +1,19 @@
 package com.abhishek.springboot.jpa.crud.example.exceptions;
+
+import java.util.Date;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ErrorResponse {
 
   private String errorCode;
   private String errorMessage;
+  private Date timeStamp;
 
-  public ErrorResponse(String errorCode, String errorMessage) {
-    this.errorCode = errorCode;
-    this.errorMessage = errorMessage;
-  }
-
-  public String getErrorCode() {
-    return errorCode;
-  }
-
-  public void setErrorCode(String errorCode) {
-    this.errorCode = errorCode;
-  }
-
-  public String getErrorMessage() {
-    return errorMessage;
-  }
-
-  public void setErrorMessage(String errorMessage) {
-    this.errorMessage = errorMessage;
-  }
+  
 }
