@@ -1,15 +1,16 @@
 package com.abhishek.springboot.jpa.crud.example.service;
 
+import java.lang.reflect.Field;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
-import com.abhishek.springboot.jpa.crud.example.dto.EmployeeDTO;
 import com.abhishek.springboot.jpa.crud.example.dto.InputRequest;
 import com.abhishek.springboot.jpa.crud.example.entity.Employee;
 import com.abhishek.springboot.jpa.crud.example.exceptions.EmployeeNotFoundException;
@@ -22,7 +23,9 @@ public class EmployeeService {
 	private EmployeeRepository employeeRepository;
 
 	public List<Employee> findAllEmployees() {
-		return employeeRepository.findAll();
+		List<Employee> employees = employeeRepository.findAll();
+		Collections.sort(employees, (e1, e2) -> e1.getFirstName().compareTo(e2.getFirstName()));
+		return employees;
 	}
 
 	public Employee getEmployeeById(long employeeId) {
@@ -52,30 +55,26 @@ public class EmployeeService {
 		return "Employee Data Updated Successfully";
 	}
 
-	
-	 public Map<String,String> deleteEmployee(Long employeeId) {
-		    employeeRepository.findById(employeeId)
-		        .orElseThrow(() -> new EmployeeNotFoundException(employeeId));
-		    employeeRepository.deleteById(employeeId);
-		    Map<String, String> response = new HashMap<>();
-		    response.put("message", "Given Employee with id : " + employeeId + " is deleted");
-		    return response;
-	 }
-
-	public EmployeeDTO addEmployee(EmployeeDTO employeeDTO) {
-		Employee employee = mapDtoToEntity(employeeDTO);
-		employee = employeeRepository.save(employee);
-		return mapEntityToDto(employee);
-	}	
-
-	private Employee mapDtoToEntity(EmployeeDTO employeeDTO) {
-		ModelMapper modelMapper = new ModelMapper();
-		return modelMapper.map(employeeDTO, Employee.class);
+	public Map<String, String> deleteEmployee(Long employeeId) {
+		employeeRepository.findById(employeeId).orElseThrow(() -> new EmployeeNotFoundException(employeeId));
+		employeeRepository.deleteById(employeeId);
+		Map<String, String> response = new HashMap<>();
+		response.put("message", "Given Employee with id : " + employeeId + " is deleted");
+		return response;
 	}
 
-	private EmployeeDTO mapEntityToDto(Employee employee) {
-		ModelMapper modelMapper = new ModelMapper();
-		return modelMapper.map(employee, EmployeeDTO.class);
+	public Employee partialUpdateEmployeeByFields(Long employeeId, Map<String, Object> fields) {
+
+		Employee existingEmployees = employeeRepository.findById(employeeId)
+				.orElseThrow(() -> new EmployeeNotFoundException(employeeId));
+
+		fields.forEach((key, value) -> {
+			Field findField = ReflectionUtils.findField(Employee.class, key);
+			findField.setAccessible(true);
+			ReflectionUtils.setField(findField, existingEmployees, value);
+		});
+
+		return employeeRepository.save(existingEmployees);
 	}
 
 }

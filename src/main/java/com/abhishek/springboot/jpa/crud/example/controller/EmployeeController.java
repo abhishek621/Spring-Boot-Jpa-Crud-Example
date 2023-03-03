@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -72,11 +73,23 @@ public class EmployeeController {
 
 	}
 
+	// PUT is used to update entire fields of an entity
 	@PutMapping("/emp/{id}")
 	public ResponseEntity<String> updateEmployee(@PathVariable(value = "id") Long employeeId,
 			@Valid @RequestBody InputRequest<Employee> employee) {
 		String updatedEmployee = employeeService.updateEmployee(employeeId, employee);
 		return ResponseEntity.ok(updatedEmployee);
+
+	}
+
+	// PATCH is used to do partial update like few of the fields from the entity
+	@PatchMapping("/emp/{id}")
+	public ResponseEntity<Employee> partialUpdateEmployee(@PathVariable(value = "id") Long employeeId,
+			@RequestBody Map<String, Object> fields) {
+
+		Employee partialUpdateEmployeeByFields = employeeService.partialUpdateEmployeeByFields(employeeId, fields);
+
+		return ResponseEntity.ok(partialUpdateEmployeeByFields);
 
 	}
 
