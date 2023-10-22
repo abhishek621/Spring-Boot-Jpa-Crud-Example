@@ -1,0 +1,13 @@
+Navigate to the store procedure section in your schema and create two store procedure
+by right clicking on store procedure->create Store procedure
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getEmployees`()
+BEGIN
+Select * from employees;
+END
+
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `getEmployeesByName`(in fname varchar(20))
+BEGIN
+SELECT * FROM employees where first_name=fname;
+END
