@@ -15,8 +15,6 @@ public class SpringBootJpaCrudExampleApplication {
 
 	public static void main(String[] args) throws FileNotFoundException, IOException {
 		SpringApplication.run(SpringBootJpaCrudExampleApplication.class, args);
-		
-		System.out.println("Hello Spring Boot");
 
 		Properties prop = new Properties();
 		String fileName = "src/main/resources/application.properties";
